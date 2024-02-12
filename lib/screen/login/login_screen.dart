@@ -126,32 +126,20 @@ class _LoginScreenState extends State<LoginScreen> {
                 final nik = nikController.text;
                 final password = passwordController.text;
                 final authProvider = Provider.of<AuthProvider>(context, listen: false);
-                final success = await authProvider.login(nik, password, _rememberMe);
-                if (success) {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const HomeScreen()),
-                  );
-                } else {
-                  // pop up error message
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text('Login Failed'),
-                        content: const Text('NIK or password is incorrect'),
-                        actions: <Widget>[
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: const Text('OK'),
-                          ),
-                        ],
-                      );
-                    },
-                  );
+                await authProvider.login(nik, password, _rememberMe);
+                final state = authProvider.state;
+                if(state == ResultState.loading) {
+                  const Center(child: CircularProgressIndicator(),);
+                } else if (state == ResultState.success) {
+                  Navigator.pushReplacementNamed(context, '/home');
                 }
+                else{
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('NIK or password is incorrect'),
+                    ),
+                  );
+              }
               }
             },
             style: ElevatedButton.styleFrom(
