@@ -8,24 +8,29 @@ class AuthProvider extends ChangeNotifier {
   final AuthRepository authRepository;
   final ApiService apiService;
 
-  ResultState _state = ResultState.loading;
-  ResultState get state => _state;
-
   AuthProvider(this.authRepository, this.apiService);
 
-  Future<bool> login(String nik, String password, bool rememberMe) async {
+  ResultState _state = ResultState.loading;
+  ResultState get state => _state;
+  String _message = '';
+  String get message => _message;
+  String _token = '';
+  String get token => _token;
+
+  Future<dynamic> login(String nik, String password, bool rememberMe) async {
     _state = ResultState.loading;
     notifyListeners();
     try {
-      final user = await apiService.login(nik, password);
+      final tokens = await apiService.login(nik, password);
       if (rememberMe) {
-        await authRepository.saveUser(user, nik, password);
+        await authRepository.saveTokens(tokens);
       }
       _state = ResultState.success;
       notifyListeners();
       return true;
     } catch (e) {
       _state = ResultState.error;
+      _message = 'Error \n$e';
       notifyListeners();
       return false;
     }
@@ -34,16 +39,15 @@ class AuthProvider extends ChangeNotifier {
   Future<bool> autoLogin() async {
     _state = ResultState.loading;
     notifyListeners();
-    final user = await authRepository.getUser();
-    if (user != null) {
-      final success = await login(user.nik, user.password!, true);
-      _state = success ? ResultState.success : ResultState.error;
+    final tokens = await authRepository.getTokens();
+    if (tokens['token'] != null) {
+      _token = tokens['token']!;
+      _state = ResultState.success;
       notifyListeners();
-      return success;
+      return true;
     } else {
       _state = ResultState.error;
       notifyListeners();
       return false;
     }
-  }
-}
+  }}

@@ -125,21 +125,29 @@ class _LoginScreenState extends State<LoginScreen> {
               if (formKey.currentState!.validate()) {
                 final nik = nikController.text;
                 final password = passwordController.text;
-                final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                final authProvider =
+                    Provider.of<AuthProvider>(context, listen: false);
                 await authProvider.login(nik, password, _rememberMe);
                 final state = authProvider.state;
-                if(state == ResultState.loading) {
-                  const Center(child: CircularProgressIndicator(),);
+                if (state == ResultState.loading) {
+                  const Center(
+                    child: CircularProgressIndicator(),
+                  );
                 } else if (state == ResultState.success) {
-                  Navigator.pushReplacementNamed(context, '/home');
-                }
-                else{
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const HomeScreen(),
+                    ),
+                    (Route<dynamic> route) => false,
+                  );
+                } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('NIK or password is incorrect'),
+                     SnackBar(
+                      content: Text('Error \n${authProvider.message}'),
                     ),
                   );
-              }
+                }
               }
             },
             style: ElevatedButton.styleFrom(
