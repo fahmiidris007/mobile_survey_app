@@ -21,4 +21,13 @@ class AuthProvider extends ChangeNotifier {
       return false;
     }
   }
+
+  Future<bool> autoLogin() async {
+    final user = await authRepository.getUser();
+    if (user != null) {
+      return await login(user.nik, user.password!, true);
+    } else {
+      return false;
+    }
+  }
 }

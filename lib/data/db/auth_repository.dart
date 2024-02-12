@@ -7,4 +7,29 @@ class AuthRepository {
     await prefs.setString('nik', nik);
     await prefs.setString('password', password);
   }
+
+  Future<Data?> getUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    final nik = prefs.getString('nik');
+    final password = prefs.getString('password');
+
+    if (nik != null && password != null) {
+      return Data(
+        userId: '',
+        nik: nik,
+        password: password,
+        systemRoleId: 0,
+        systemRole: '',
+        name: '',
+        email: '',
+        phone: '',
+        departementId: '',
+        departement: '',
+        siteLocationId: '',
+        siteLocation: '',
+      );
+    } else {
+      return null;
+    }
+  }
 }

@@ -2,27 +2,45 @@ import 'package:flutter/material.dart';
 import 'package:mobile_survey_app/data/api/api_service.dart';
 import 'package:mobile_survey_app/data/db/auth_repository.dart';
 import 'package:mobile_survey_app/provider/auth_provider.dart';
-import 'package:mobile_survey_app/theme/style.dart';
+import 'package:mobile_survey_app/screen/home/home_screen.dart';
 import 'package:mobile_survey_app/screen/login/login_screen.dart';
+import 'package:mobile_survey_app/theme/style.dart';
 import 'package:provider/provider.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final authRepository = AuthRepository();
+  final apiService = ApiService();
+  final authProvider = AuthProvider(authRepository, apiService);
+  final autoLoginSuccess = await authProvider.autoLogin();
+
+  runApp(MyApp(
+    initialRoute: autoLoginSuccess ? '/home' : '/',
+    authProvider: authProvider,
+  ));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final String initialRoute;
+  final AuthProvider authProvider;
+
+  const MyApp(
+      {super.key, required this.initialRoute, required this.authProvider});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => AuthProvider(AuthRepository(), ApiService()),
       child: MaterialApp(
-        title: 'Flutter Demo',
+        title: 'Mobile Survey App',
         theme: ThemeData(
           textTheme: myTextTheme,
         ),
-        home: const LoginScreen(),
+        initialRoute: initialRoute,
+        routes: {
+          '/': (context) => const LoginScreen(),
+          '/home': (context) => const HomeScreen(),
+        },
       ),
     );
   }
