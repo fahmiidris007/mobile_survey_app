@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_survey_app/provider/auth_provider.dart';
+import 'package:mobile_survey_app/screen/home/home_screen.dart';
 import 'package:mobile_survey_app/theme/style.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({
@@ -15,6 +18,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final passwordController = TextEditingController();
   final formKey = GlobalKey<FormState>();
   bool _obscureText = true;
+  bool _rememberMe = false;
 
   @override
   Widget build(BuildContext context) {
@@ -23,14 +27,14 @@ class _LoginScreenState extends State<LoginScreen> {
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(20),
-            child: Form(key: formKey, child: _buildForm()),
+            child: Form(key: formKey, child: _buildForm(context)),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildForm() {
+  Widget _buildForm(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -101,7 +105,13 @@ class _LoginScreenState extends State<LoginScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Checkbox(value: false, onChanged: (value) {}),
+            Checkbox(
+                value: _rememberMe,
+                onChanged: (value) {
+                  setState(() {
+                    _rememberMe = value ?? false;
+                  });
+                }),
             const Text(
               'Remember me',
               style: TextStyle(color: hintColor),
@@ -111,8 +121,38 @@ class _LoginScreenState extends State<LoginScreen> {
         const SizedBox(height: 16),
         Center(
           child: ElevatedButton(
-            onPressed: () {
-              if (formKey.currentState!.validate()) {}
+            onPressed: () async {
+              if (formKey.currentState!.validate()) {
+                final nik = nikController.text;
+                final password = passwordController.text;
+                final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                final success = await authProvider.login(nik, password, _rememberMe);
+                if (success) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const HomeScreen()),
+                  );
+                } else {
+                  // pop up error message
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Login Failed'),
+                        content: const Text('NIK or password is incorrect'),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('OK'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }
+              }
             },
             style: ElevatedButton.styleFrom(
               fixedSize: const Size.fromWidth(300),

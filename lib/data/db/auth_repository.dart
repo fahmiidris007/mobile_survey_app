@@ -2,43 +2,9 @@ import 'package:mobile_survey_app/model/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthRepository {
-  final String stateKey = "state";
-  final String userKey = "user";
-
-  Future<bool> isLoggedIn() async {
-    final preferences = await SharedPreferences.getInstance();
-    await Future.delayed(const Duration(seconds: 2));
-    return preferences.getBool(stateKey) ?? false;
-  }
-
-  Future<bool> login() async {
-    final preferences = await SharedPreferences.getInstance();
-    await Future.delayed(const Duration(seconds: 2));
-    return preferences.setBool(stateKey, true);
-  }
-
-  Future<bool> logout() async {
-    final preferences = await SharedPreferences.getInstance();
-    await Future.delayed(const Duration(seconds: 2));
-    return preferences.setBool(stateKey, false);
-  }
-
-  Future<bool> deleteUser() async {
-    final preferences = await SharedPreferences.getInstance();
-    await Future.delayed(const Duration(seconds: 2));
-    return preferences.setString(userKey, "");
-  }
-
-  Future<User?> getUser() async {
-    final preferences = await SharedPreferences.getInstance();
-    await Future.delayed(const Duration(seconds: 2));
-    final json = preferences.getString(userKey) ?? "";
-    User? user;
-    try {
-      user = User.fromJson(json);
-    } catch (e) {
-      user = null;
-    }
-    return user;
+  Future<void> saveUser(User user, String nik, String password) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('nik', nik);
+    await prefs.setString('password', password);
   }
 }

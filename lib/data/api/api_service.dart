@@ -12,13 +12,12 @@ class ApiService {
       url,
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+
       },
-      body: jsonEncode(
-        <String, String>{
-          'nik': nik,
-          'password': password,
-        },
-      ),
+      body: jsonEncode(<String, String>{
+        'nik': nik,
+        'password': password,
+      }),
     );
 
     if (response.statusCode == 200) {
