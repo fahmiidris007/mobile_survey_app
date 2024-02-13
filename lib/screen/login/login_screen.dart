@@ -147,12 +147,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: CircularProgressIndicator(),
                   );
                 } else if (state == ResultState.success) {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const HomeScreen(),
-                    ),
-                  );
+                  Navigator.pushReplacementNamed(context, '/home');
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                      SnackBar(

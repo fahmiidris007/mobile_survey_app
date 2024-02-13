@@ -34,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () {
               Provider.of<SurveyProvider>(context, listen: false).logout();
               Provider.of<SurveyProvider>(context, listen: false).removeUser();
-              Navigator.pushReplacementNamed(context, '/');
+              Navigator.pushReplacementNamed(context, '/login');
             },
           ),
         ],

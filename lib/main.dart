@@ -16,7 +16,7 @@ void main() async {
   final autoLoginSuccess = await authProvider.autoLogin();
 
   runApp(MyApp(
-    initialRoute: autoLoginSuccess ? '/home' : '/',
+    initialRoute: autoLoginSuccess ? '/home' : '/login',
     authProvider: authProvider,
   ));
 }
@@ -52,7 +52,7 @@ class MyApp extends StatelessWidget {
         ),
         initialRoute: initialRoute,
         routes: {
-          '/': (context) => const LoginScreen(),
+          '/login': (context) => const LoginScreen(),
           '/home': (context) => const HomeScreen(),
         },
       ),
