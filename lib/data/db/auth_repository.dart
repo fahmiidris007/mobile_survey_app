@@ -2,34 +2,38 @@ import 'package:mobile_survey_app/model/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthRepository {
-  Future<void> saveUser(User user, String nik, String password) async {
+  Future<void> saveTokens(Map<String, String> tokens) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('nik', nik);
-    await prefs.setString('password', password);
+    await prefs.setString('token', tokens['token']!);
+    await prefs.setString('refresh_token', tokens['refresh_token']!);
   }
 
-  Future<Data?> getUser() async {
+  Future<Map<String, String?>> getTokens() async {
     final prefs = await SharedPreferences.getInstance();
-    final nik = prefs.getString('nik');
-    final password = prefs.getString('password');
+    final token = prefs.getString('token');
+    final refreshToken = prefs.getString('refresh_token');
+    return {'token': token, 'refresh_token': refreshToken};
+  }
 
-    if (nik != null && password != null) {
-      return Data(
-        userId: '',
-        nik: nik,
-        password: password,
-        systemRoleId: 0,
-        systemRole: '',
-        name: '',
-        email: '',
-        phone: '',
-        departementId: '',
-        departement: '',
-        siteLocationId: '',
-        siteLocation: '',
-      );
-    } else {
-      return null;
-    }
+  Future<void> removeTokens() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('token');
+    await prefs.remove('refresh_token');
+  }
+
+  Future<void> saveUser(User user) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user', userToJson(user));
+  }
+
+  Future<User?> getUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userJson = prefs.getString('user');
+    return userJson != null ? userFromJson(userJson) : null;
+  }
+
+  Future<void> removeUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('user');
   }
 }

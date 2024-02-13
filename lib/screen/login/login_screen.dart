@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_survey_app/provider/auth_provider.dart';
-import 'package:mobile_survey_app/screen/home/home_screen.dart';
 import 'package:mobile_survey_app/theme/style.dart';
 import 'package:provider/provider.dart';
 
@@ -19,6 +18,19 @@ class _LoginScreenState extends State<LoginScreen> {
   final formKey = GlobalKey<FormState>();
   bool _obscureText = true;
   bool _rememberMe = false;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() async {
+      final user = await Provider.of<AuthProvider>(context, listen: false).authRepository.getUser();
+      if (user != null) {
+        nikController.text = user.nik;
+        passwordController.text = user.password;
+        _rememberMe = true;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -125,31 +137,21 @@ class _LoginScreenState extends State<LoginScreen> {
               if (formKey.currentState!.validate()) {
                 final nik = nikController.text;
                 final password = passwordController.text;
-                final authProvider = Provider.of<AuthProvider>(context, listen: false);
-                final success = await authProvider.login(nik, password, _rememberMe);
-                if (success) {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const HomeScreen()),
+                final authProvider =
+                    Provider.of<AuthProvider>(context, listen: false);
+                await authProvider.login(nik, password, _rememberMe);
+                final state = authProvider.state;
+                if (state == ResultState.loading) {
+                  const Center(
+                    child: CircularProgressIndicator(),
                   );
+                } else if (state == ResultState.success) {
+                  Navigator.pushReplacementNamed(context, '/home');
                 } else {
-                  // pop up error message
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text('Login Failed'),
-                        content: const Text('NIK or password is incorrect'),
-                        actions: <Widget>[
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: const Text('OK'),
-                          ),
-                        ],
-                      );
-                    },
+                  ScaffoldMessenger.of(context).showSnackBar(
+                     SnackBar(
+                      content: Text('Error \n${authProvider.message}'),
+                    ),
                   );
                 }
               }

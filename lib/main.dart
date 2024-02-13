@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_survey_app/data/api/api_service.dart';
 import 'package:mobile_survey_app/data/db/auth_repository.dart';
 import 'package:mobile_survey_app/provider/auth_provider.dart';
+import 'package:mobile_survey_app/provider/survey_provider.dart';
 import 'package:mobile_survey_app/screen/home/home_screen.dart';
 import 'package:mobile_survey_app/screen/login/login_screen.dart';
 import 'package:mobile_survey_app/theme/style.dart';
@@ -15,7 +16,7 @@ void main() async {
   final autoLoginSuccess = await authProvider.autoLogin();
 
   runApp(MyApp(
-    initialRoute: autoLoginSuccess ? '/home' : '/',
+    initialRoute: autoLoginSuccess ? '/home' : '/login',
     authProvider: authProvider,
   ));
 }
@@ -29,8 +30,21 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => AuthProvider(AuthRepository(), ApiService()),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => AuthProvider(
+            AuthRepository(),
+            ApiService(),
+          ),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => SurveyProvider(
+            ApiService(),
+            AuthRepository(),
+          ),
+        )
+      ],
       child: MaterialApp(
         title: 'Mobile Survey App',
         theme: ThemeData(
@@ -38,7 +52,7 @@ class MyApp extends StatelessWidget {
         ),
         initialRoute: initialRoute,
         routes: {
-          '/': (context) => const LoginScreen(),
+          '/login': (context) => const LoginScreen(),
           '/home': (context) => const HomeScreen(),
         },
       ),
