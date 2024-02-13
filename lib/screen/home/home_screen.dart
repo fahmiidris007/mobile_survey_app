@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_survey_app/model/survey.dart';
 import 'package:mobile_survey_app/provider/survey_provider.dart';
+import 'package:mobile_survey_app/theme/style.dart';
+import 'package:mobile_survey_app/utils/date_formater.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -11,7 +13,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   @override
   void initState() {
     super.initState();
@@ -25,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Padding(
-          padding: EdgeInsets.only(left: 16.0),
+          padding: EdgeInsets.only(left: 8.0),
           child: Text('Halaman Survei'),
         ),
         actions: [
@@ -72,11 +73,40 @@ class ListCardSurvey extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: ListTile(
-        title: Text(survey.name),
-        subtitle: Text(survey.description),
-        // Add more fields of the survey as needed
+    return Container(
+      margin: EdgeInsets.all(8.0),
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: labelColor,
+          width: 0.5,
+        ),
+      ),
+      child: Card(
+        elevation: 0,
+        child: ListTile(
+          // contentPadding: EdgeInsets.all(8.0),
+          leading: Image(image: AssetImage('assets/images/grade.png')),
+          title: Text(
+            survey.name,
+            style: myTextTheme.titleSmall,
+            overflow: TextOverflow.ellipsis,
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Created At: ${DateFormatter.format(survey.createdAt)}',
+                style: const TextStyle(color: resultColor),
+              ),
+              Text(
+                survey.downloadedAt != null
+                    ? 'Last Download: ${DateFormatter.format(survey.downloadedAt)}'
+                    : 'Not downloaded yet',
+                style: const TextStyle(color: resultColor),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

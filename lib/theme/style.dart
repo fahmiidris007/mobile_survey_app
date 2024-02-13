@@ -8,6 +8,7 @@ const Color labelColor = Color(0xFFB9B9B9);
 const Color hintColor = Color(0xFF757575);
 const Color resultColor = Color(0xFF107C41);
 
+
 ThemeData lightTheme = ThemeData(
   colorScheme: ThemeData.light().colorScheme.copyWith(
         primary: primaryColor,
@@ -42,7 +43,7 @@ final TextTheme myTextTheme = TextTheme(
   titleMedium: GoogleFonts.inter(
       fontSize: 18, fontWeight: FontWeight.w400, letterSpacing: 0.15),
   titleSmall: GoogleFonts.inter(
-      fontSize: 15, fontWeight: FontWeight.w600, letterSpacing: 0.1),
+      fontSize: 14, fontWeight: FontWeight.w600, letterSpacing: 0.1),
   bodyLarge: GoogleFonts.robotoCondensed(
       fontSize: 16, fontWeight: FontWeight.w400, letterSpacing: 0.5),
   bodyMedium: GoogleFonts.robotoCondensed(
