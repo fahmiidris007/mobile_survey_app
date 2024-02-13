@@ -27,7 +27,7 @@ class SurveyProvider extends ChangeNotifier{
       final tokens = await authRepository.getTokens();
       if (tokens['token'] != null) {
         final survey = await apiService.getSurvey(tokens['token']!);
-        if (survey.status == true) {
+        if (survey.data.isEmpty) {
           _state = ResultState.noData;
           notifyListeners();
           return _message = 'No Data';
