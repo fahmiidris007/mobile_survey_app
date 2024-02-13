@@ -21,6 +21,19 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _rememberMe = false;
 
   @override
+  void initState() {
+    super.initState();
+    Future.microtask(() async {
+      final user = await Provider.of<AuthProvider>(context, listen: false).authRepository.getUser();
+      if (user != null) {
+        nikController.text = user.nik;
+        passwordController.text = user.password;
+        _rememberMe = true;
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
@@ -134,12 +147,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: CircularProgressIndicator(),
                   );
                 } else if (state == ResultState.success) {
-                  Navigator.pushAndRemoveUntil(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                       builder: (context) => const HomeScreen(),
                     ),
-                    (Route<dynamic> route) => false,
                   );
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(

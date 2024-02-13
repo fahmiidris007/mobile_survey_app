@@ -33,6 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: const Icon(Icons.logout_outlined),
             onPressed: () {
               Provider.of<SurveyProvider>(context, listen: false).logout();
+              Provider.of<SurveyProvider>(context, listen: false).removeUser();
               Navigator.pushReplacementNamed(context, '/');
             },
           ),

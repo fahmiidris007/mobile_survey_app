@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_survey_app/data/api/api_service.dart';
 import 'package:mobile_survey_app/data/db/auth_repository.dart';
+import 'package:mobile_survey_app/model/user.dart';
 
 enum ResultState { loading, success, error }
 
@@ -22,8 +23,9 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
     try {
       final tokens = await apiService.login(nik, password);
+      await authRepository.saveTokens(tokens);
       if (rememberMe) {
-        await authRepository.saveTokens(tokens);
+        await authRepository.saveUser(User(nik: nik, password: password));
       }
       _state = ResultState.success;
       notifyListeners();
@@ -39,15 +41,13 @@ class AuthProvider extends ChangeNotifier {
   Future<bool> autoLogin() async {
     _state = ResultState.loading;
     notifyListeners();
-    final tokens = await authRepository.getTokens();
-    if (tokens['token'] != null) {
-      _token = tokens['token']!;
-      _state = ResultState.success;
-      notifyListeners();
-      return true;
+    final user = await authRepository.getUser();
+    if (user != null) {
+      return await login(user.nik, user.password, false);
     } else {
       _state = ResultState.error;
       notifyListeners();
       return false;
     }
-  }}
+  }
+}

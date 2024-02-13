@@ -20,4 +20,20 @@ class AuthRepository {
     await prefs.remove('token');
     await prefs.remove('refresh_token');
   }
+
+  Future<void> saveUser(User user) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user', userToJson(user));
+  }
+
+  Future<User?> getUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userJson = prefs.getString('user');
+    return userJson != null ? userFromJson(userJson) : null;
+  }
+
+  Future<void> removeUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('user');
+  }
 }

@@ -51,4 +51,8 @@ class SurveyProvider extends ChangeNotifier{
   Future<void> logout() async {
     await authRepository.removeTokens();
   }
+
+  Future<void> removeUser() async{
+    await authRepository.removeUser();
+  }
 }
