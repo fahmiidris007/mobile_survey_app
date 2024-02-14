@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:http/http.dart' as http;
 import 'package:mobile_survey_app/model/survey.dart';
+import 'package:mobile_survey_app/model/detail_survey.dart';
 import 'package:mobile_survey_app/model/user.dart';
 
 class ApiService {
@@ -35,7 +36,6 @@ class ApiService {
       }
       return tokens;
     } else {
-      print('Failed to login. Status code: ${response.statusCode}. Response body: ${response.body}');
       throw Exception('Failed to login');
     }
   }
@@ -50,9 +50,22 @@ class ApiService {
     if (response.statusCode == 200) {
       return Survey.fromJson(json.decode(response.body));
     } else {
-      print('Failed to load survey. Status code: ${response.statusCode}. Response body: ${response.body}');
-      log('Failed to load survey. Status code: ${response.statusCode}. Response body: ${response.body}');
       throw Exception('Failed to load survey');
     }
+  }
+
+  Future<DetailSurvey> getDetailSurvey(String token, String assessment_id) async {
+    final url = Uri.parse('$baseUrl/assessments/question/:$assessment_id');
+    final response = await http.get(url,headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Cookie': 'token=$token',
+    },);
+
+    if (response.statusCode == 200) {
+      return DetailSurvey.fromJson(json.decode(response.body));
+    } else {
+      throw Exception('Failed to load detail survey');
+    }
+
   }
 }
