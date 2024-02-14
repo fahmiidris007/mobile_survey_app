@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_survey_app/data/api/api_service.dart';
 import 'package:mobile_survey_app/data/db/auth_repository.dart';
 import 'package:mobile_survey_app/provider/auth_provider.dart';
+import 'package:mobile_survey_app/provider/detail_survey_provider.dart';
 import 'package:mobile_survey_app/provider/survey_provider.dart';
 import 'package:mobile_survey_app/screen/home/home_screen.dart';
 import 'package:mobile_survey_app/screen/login/login_screen.dart';
@@ -43,7 +44,13 @@ class MyApp extends StatelessWidget {
             ApiService(),
             AuthRepository(),
           ),
-        )
+        ),
+        ChangeNotifierProvider(
+          create: (context) => DetailSurveyProvider(
+            apiService: ApiService(),
+            authRepository: AuthRepository(),
+          ),
+        ),
       ],
       child: MaterialApp(
         title: 'Mobile Survey App',

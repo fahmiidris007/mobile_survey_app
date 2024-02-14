@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_survey_app/model/survey.dart';
 import 'package:mobile_survey_app/provider/survey_provider.dart';
+import 'package:mobile_survey_app/screen/detail/detail_screen.dart';
 import 'package:mobile_survey_app/theme/style.dart';
 import 'package:mobile_survey_app/utils/date_formater.dart';
 import 'package:provider/provider.dart';
@@ -73,38 +74,47 @@ class ListCardSurvey extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: labelColor,
-          width: 0.5,
-        ),
-      ),
-      child: Card(
-        elevation: 0,
-        child: ListTile(
-          // contentPadding: EdgeInsets.all(8.0),
-          leading: Image(image: AssetImage('assets/images/grade.png')),
-          title: Text(
-            survey.name,
-            style: myTextTheme.titleSmall,
-            overflow: TextOverflow.ellipsis,
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DetailSurveyScreen(id: survey.id),
           ),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Created At: ${DateFormatter.format(survey.createdAt)}',
-                style: const TextStyle(color: resultColor),
-              ),
-              Text(
-                survey.downloadedAt != null
-                    ? 'Last Download: ${DateFormatter.format(survey.downloadedAt)}'
-                    : 'Not downloaded yet',
-                style: const TextStyle(color: resultColor),
-              ),
-            ],
+        );      },
+      child: Container(
+        margin: EdgeInsets.all(8.0),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: labelColor,
+            width: 0.5,
+          ),
+        ),
+        child: Card(
+          elevation: 0,
+          child: ListTile(
+            // contentPadding: EdgeInsets.all(8.0),
+            leading: Image(image: AssetImage('assets/images/grade.png')),
+            title: Text(
+              survey.name,
+              style: myTextTheme.titleSmall,
+              overflow: TextOverflow.ellipsis,
+            ),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Created At: ${DateFormatter.format(survey.createdAt)}',
+                  style: const TextStyle(color: resultColor),
+                ),
+                Text(
+                  survey.downloadedAt != null
+                      ? 'Last Download: ${DateFormatter.format(survey.downloadedAt)}'
+                      : 'Not downloaded yet',
+                  style: const TextStyle(color: resultColor),
+                ),
+              ],
+            ),
           ),
         ),
       ),
