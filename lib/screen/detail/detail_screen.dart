@@ -101,7 +101,7 @@ class _DetailSurveyScreenState extends State<DetailSurveyScreen> {
                   QuestionCard(
                       question: state.result.data.question[currentIndex]),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       ElevatedButton(
                         onPressed: currentIndex > 0
@@ -111,6 +111,18 @@ class _DetailSurveyScreenState extends State<DetailSurveyScreen> {
                                 });
                               }
                             : null,
+                        style: ElevatedButton.styleFrom(
+                          fixedSize: const Size.fromWidth(120),
+                          backgroundColor: primaryColor,
+                          foregroundColor: secondaryColor,
+                          textStyle: myTextTheme.titleSmall,
+                          shape: const RoundedRectangleBorder(
+                            side: BorderSide(color: secondaryColor),
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(4),
+                            ),
+                          ),
+                        ),
                         child: Text('Previous'),
                       ),
                       ElevatedButton(
@@ -122,6 +134,17 @@ class _DetailSurveyScreenState extends State<DetailSurveyScreen> {
                                     });
                                   }
                                 : null,
+                        style: ElevatedButton.styleFrom(
+                          fixedSize: const Size.fromWidth(120),
+                          backgroundColor: secondaryColor,
+                          foregroundColor: primaryColor,
+                          textStyle: myTextTheme.titleSmall,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(4),
+                            ),
+                          ),
+                        ),
                         child:
                             currentIndex < state.result.data.question.length - 1
                                 ? Text('Next')

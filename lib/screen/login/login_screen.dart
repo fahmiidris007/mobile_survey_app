@@ -163,7 +163,7 @@ class _LoginScreenState extends State<LoginScreen> {
               textStyle: myTextTheme.titleSmall,
               shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(
-                  Radius.circular(0),
+                  Radius.circular(4),
                 ),
               ),
             ),
@@ -189,7 +189,7 @@ class _LoginScreenState extends State<LoginScreen> {
               shape: const RoundedRectangleBorder(
                 side: BorderSide(color: secondaryColor),
                 borderRadius: BorderRadius.all(
-                  Radius.circular(0),
+                  Radius.circular(4),
                 ),
               ),
             ),
