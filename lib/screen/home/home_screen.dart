@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_survey_app/model/survey.dart';
 import 'package:mobile_survey_app/provider/survey_provider.dart';
 import 'package:provider/provider.dart';
+
+import 'components/list_card_survey.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -11,7 +12,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   @override
   void initState() {
     super.initState();
@@ -25,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Padding(
-          padding: EdgeInsets.only(left: 16.0),
+          padding: EdgeInsets.only(left: 8.0),
           child: Text('Halaman Survei'),
         ),
         actions: [
@@ -40,13 +40,13 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Consumer<SurveyProvider>(
           builder: (context, state, _) {
             if (state.state == ResultState.loading) {
               return const Center(child: CircularProgressIndicator());
             } else if (state.state == ResultState.noData) {
-              return const Center(child: Text('No Data'));
+              return Center(child: Text(state.message));
             } else if (state.state == ResultState.error) {
               return Center(child: Text(state.message));
             } else {
@@ -60,23 +60,6 @@ class _HomeScreenState extends State<HomeScreen> {
             }
           },
         ),
-      ),
-    );
-  }
-}
-
-class ListCardSurvey extends StatelessWidget {
-  final Datum survey;
-
-  const ListCardSurvey({super.key, required this.survey});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: ListTile(
-        title: Text(survey.name),
-        subtitle: Text(survey.description),
-        // Add more fields of the survey as needed
       ),
     );
   }

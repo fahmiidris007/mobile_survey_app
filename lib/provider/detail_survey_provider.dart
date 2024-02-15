@@ -1,40 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_survey_app/data/api/api_service.dart';
 import 'package:mobile_survey_app/data/db/auth_repository.dart';
-import 'package:mobile_survey_app/model/survey.dart';
+import 'package:mobile_survey_app/model/detail_survey.dart';
 
 enum ResultState { loading, noData, success, error }
 
-class SurveyProvider extends ChangeNotifier{
+class DetailSurveyProvider extends ChangeNotifier {
   final ApiService apiService;
   final AuthRepository authRepository;
+  final String id;
 
-  SurveyProvider(this.apiService, this.authRepository){
-    fetchSurvey();
+  DetailSurveyProvider(
+      {required this.apiService, required this.authRepository, this.id = ''}) {
+    getDetailSurveyTest(id);
   }
 
-  late Survey _listSurvey;
+  late DetailSurvey _surveyTest;
   late ResultState _state = ResultState.loading;
   String _message = '';
   String get message => _message;
-  Survey get result => _listSurvey;
+  DetailSurvey get result => _surveyTest;
   ResultState get state => _state;
 
-  Future<dynamic> fetchSurvey() async {
+  Future<dynamic> getDetailSurveyTest(String id) async {
     try {
       _state = ResultState.loading;
       notifyListeners();
       final tokens = await authRepository.getTokens();
       if (tokens['token'] != null) {
-        final survey = await apiService.getSurvey(tokens['token']!);
-        if (survey.data.isEmpty) {
+        final surveyTest =
+            await apiService.getDetailSurvey(tokens['token']!, id);
+        if (surveyTest.data == null) {
           _state = ResultState.noData;
           notifyListeners();
-          return _message = 'No Data Found';
+          return _message = 'No Data';
         } else {
           _state = ResultState.success;
           notifyListeners();
-          return _listSurvey = survey;
+          return _surveyTest = surveyTest;
         }
       } else {
         _state = ResultState.error;
@@ -44,15 +47,7 @@ class SurveyProvider extends ChangeNotifier{
     } catch (e) {
       _state = ResultState.error;
       notifyListeners();
-      return _message = 'Check your internet connection';
+      return _message = 'Error \n$e';
     }
-  }
-
-  Future<void> logout() async {
-    await authRepository.removeTokens();
-  }
-
-  Future<void> removeUser() async{
-    await authRepository.removeUser();
   }
 }
