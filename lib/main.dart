@@ -5,7 +5,6 @@ import 'package:mobile_survey_app/provider/auth_provider.dart';
 import 'package:mobile_survey_app/provider/detail_survey_provider.dart';
 import 'package:mobile_survey_app/provider/post_survey_provider.dart';
 import 'package:mobile_survey_app/provider/survey_provider.dart';
-import 'package:mobile_survey_app/screen/detail/detail_screen.dart';
 import 'package:mobile_survey_app/screen/home/home_screen.dart';
 import 'package:mobile_survey_app/screen/login/login_screen.dart';
 import 'package:mobile_survey_app/theme/style.dart';
@@ -53,10 +52,11 @@ class MyApp extends StatelessWidget {
             authRepository: AuthRepository(),
           ),
         ),
-        ChangeNotifierProvider(create: (context) => PostSurveyProvider(
-          ApiService(),
-          AuthRepository(),
-        )),
+        ChangeNotifierProvider(
+            create: (context) => PostSurveyProvider(
+                  ApiService(),
+                  AuthRepository(),
+                )),
       ],
       child: MaterialApp(
         title: 'Mobile Survey App',

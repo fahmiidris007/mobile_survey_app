@@ -10,7 +10,8 @@ class DetailSurveyProvider extends ChangeNotifier {
   final AuthRepository authRepository;
   final String id;
 
-  DetailSurveyProvider({required this.apiService, required this.authRepository, this.id = ''}) {
+  DetailSurveyProvider(
+      {required this.apiService, required this.authRepository, this.id = ''}) {
     getDetailSurveyTest(id);
   }
 
@@ -27,7 +28,8 @@ class DetailSurveyProvider extends ChangeNotifier {
       notifyListeners();
       final tokens = await authRepository.getTokens();
       if (tokens['token'] != null) {
-        final surveyTest = await apiService.getDetailSurvey(tokens['token']!, id);
+        final surveyTest =
+            await apiService.getDetailSurvey(tokens['token']!, id);
         if (surveyTest.data == null) {
           _state = ResultState.noData;
           notifyListeners();
@@ -48,5 +50,4 @@ class DetailSurveyProvider extends ChangeNotifier {
       return _message = 'Error \n$e';
     }
   }
-
 }

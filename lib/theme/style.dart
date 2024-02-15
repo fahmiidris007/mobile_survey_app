@@ -9,7 +9,6 @@ const Color hintColor = Color(0xFF757575);
 const Color resultColor = Color(0xFF107C41);
 const Color dividerColor = Color(0xFFEEF6F9);
 
-
 ThemeData lightTheme = ThemeData(
   colorScheme: ThemeData.light().colorScheme.copyWith(
         primary: primaryColor,

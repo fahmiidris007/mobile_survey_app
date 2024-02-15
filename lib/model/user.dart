@@ -14,12 +14,12 @@ class User {
   });
 
   factory User.fromJson(Map<String, dynamic> json) => User(
-    nik: json["nik"],
-    password: json["password"],
-  );
+        nik: json["nik"],
+        password: json["password"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "nik": nik,
-    "password": password,
-  };
+        "nik": nik,
+        "password": password,
+      };
 }

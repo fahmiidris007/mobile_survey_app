@@ -15,7 +15,7 @@ class AuthProvider extends ChangeNotifier {
   ResultState get state => _state;
   String _message = '';
   String get message => _message;
-  String _token = '';
+  final String _token = '';
   String get token => _token;
 
   Future<dynamic> login(String nik, String password, bool rememberMe) async {
@@ -32,7 +32,7 @@ class AuthProvider extends ChangeNotifier {
       return true;
     } catch (e) {
       _state = ResultState.error;
-      _message = 'Error \n$e';
+      _message = 'Login error, please try again later';
       notifyListeners();
       return false;
     }

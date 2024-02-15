@@ -1,7 +1,12 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:mobile_survey_app/provider/auth_provider.dart';
 import 'package:mobile_survey_app/theme/style.dart';
 import 'package:provider/provider.dart';
+
+import 'components/fingerprint_button.dart';
+import 'components/login_button.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({
@@ -23,7 +28,9 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     Future.microtask(() async {
-      final user = await Provider.of<AuthProvider>(context, listen: false).authRepository.getUser();
+      final user = await Provider.of<AuthProvider>(context, listen: false)
+          .authRepository
+          .getUser();
       if (user != null) {
         nikController.text = user.nik;
         passwordController.text = user.password;
@@ -61,59 +68,13 @@ class _LoginScreenState extends State<LoginScreen> {
           style: myTextTheme.bodyMedium?.copyWith(color: labelColor),
         ),
         const SizedBox(height: 4),
-        TextFormField(
-          controller: nikController,
-          decoration: InputDecoration(
-              labelText: 'NIK',
-              labelStyle: myTextTheme.bodyMedium?.copyWith(color: hintColor),
-              constraints: const BoxConstraints(maxHeight: 40),
-              border: const OutlineInputBorder(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(4),
-                ),
-              )),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'NIK is required';
-            }
-            return null;
-          },
-        ),
+        formNik(),
         const SizedBox(height: 16),
         Text(
           'Password',
           style: myTextTheme.bodyMedium?.copyWith(color: labelColor),
         ),
-        TextFormField(
-          controller: passwordController,
-          obscureText: _obscureText,
-          decoration: InputDecoration(
-            labelText: 'Password',
-            labelStyle: myTextTheme.bodyMedium?.copyWith(color: hintColor),
-            constraints: const BoxConstraints(maxHeight: 40),
-            border: const OutlineInputBorder(
-              borderRadius: BorderRadius.all(
-                Radius.circular(4),
-              ),
-            ),
-            suffixIcon: IconButton(
-              icon: Icon(
-                _obscureText ? Icons.visibility : Icons.visibility_off,
-              ),
-              onPressed: () {
-                setState(() {
-                  _obscureText = !_obscureText;
-                });
-              },
-            ),
-          ),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Password is required';
-            }
-            return null;
-          },
-        ),
+        formPassword(),
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
@@ -132,45 +93,11 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         const SizedBox(height: 16),
         Center(
-          child: ElevatedButton(
-            onPressed: () async {
-              if (formKey.currentState!.validate()) {
-                final nik = nikController.text;
-                final password = passwordController.text;
-                final authProvider =
-                    Provider.of<AuthProvider>(context, listen: false);
-                await authProvider.login(nik, password, _rememberMe);
-                final state = authProvider.state;
-                if (state == ResultState.loading) {
-                  const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                } else if (state == ResultState.success) {
-                  Navigator.pushReplacementNamed(context, '/home');
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                     SnackBar(
-                      content: Text('Error \n${authProvider.message}'),
-                    ),
-                  );
-                }
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              fixedSize: const Size.fromWidth(300),
-              backgroundColor: secondaryColor,
-              foregroundColor: primaryColor,
-              textStyle: myTextTheme.titleSmall,
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(4),
-                ),
-              ),
-            ),
-            child: const Text(
-              'Log in',
-            ),
-          ),
+          child: LoginButton(
+              formKey: formKey,
+              nikController: nikController,
+              passwordController: passwordController,
+              rememberMe: _rememberMe),
         ),
         const SizedBox(height: 8),
         Center(
@@ -178,27 +105,64 @@ class _LoginScreenState extends State<LoginScreen> {
               style: myTextTheme.labelLarge?.copyWith(color: secondaryColor)),
         ),
         const SizedBox(height: 8),
-        Center(
-          child: ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              fixedSize: const Size.fromWidth(300),
-              backgroundColor: primaryColor,
-              foregroundColor: secondaryColor,
-              textStyle: myTextTheme.titleSmall,
-              shape: const RoundedRectangleBorder(
-                side: BorderSide(color: secondaryColor),
-                borderRadius: BorderRadius.all(
-                  Radius.circular(4),
-                ),
-              ),
-            ),
-            child: const Text(
-              'Fingerprint',
-            ),
-          ),
+        const Center(
+          child: FingerprintButton(),
         ),
       ],
+    );
+  }
+
+  TextFormField formPassword() {
+    return TextFormField(
+      controller: passwordController,
+      obscureText: _obscureText,
+      decoration: InputDecoration(
+        labelText: 'Password',
+        labelStyle: myTextTheme.bodyMedium?.copyWith(color: hintColor),
+        constraints: const BoxConstraints(maxHeight: 40),
+        border: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(4),
+          ),
+        ),
+        suffixIcon: IconButton(
+          icon: Icon(
+            _obscureText ? Icons.visibility : Icons.visibility_off,
+          ),
+          onPressed: () {
+            setState(() {
+              _obscureText = !_obscureText;
+            });
+          },
+        ),
+      ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Password is required';
+        }
+        return null;
+      },
+    );
+  }
+
+  TextFormField formNik() {
+    return TextFormField(
+      controller: nikController,
+      decoration: InputDecoration(
+          labelText: 'NIK',
+          labelStyle: myTextTheme.bodyMedium?.copyWith(color: hintColor),
+          constraints: const BoxConstraints(maxHeight: 40),
+          border: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(4),
+            ),
+          )),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'NIK is required';
+        }
+        return null;
+      },
     );
   }
 }

@@ -45,8 +45,7 @@ class PostSurveyProvider extends ChangeNotifier {
     } catch (e) {
       _state = PostResultState.error;
       notifyListeners();
-      print(e);
-      return _message = 'Error \n$e';
+      return _message = 'Check your internet connection';
     }
   }
 }

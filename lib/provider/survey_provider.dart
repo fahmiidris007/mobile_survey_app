@@ -30,7 +30,7 @@ class SurveyProvider extends ChangeNotifier{
         if (survey.data.isEmpty) {
           _state = ResultState.noData;
           notifyListeners();
-          return _message = 'No Data';
+          return _message = 'No Data Found';
         } else {
           _state = ResultState.success;
           notifyListeners();
@@ -44,7 +44,7 @@ class SurveyProvider extends ChangeNotifier{
     } catch (e) {
       _state = ResultState.error;
       notifyListeners();
-      return _message = 'Error \n$e';
+      return _message = 'Check your internet connection';
     }
   }
 
