@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_survey_app/model/detail_survey.dart';
 import 'package:mobile_survey_app/provider/detail_survey_provider.dart';
+import 'package:mobile_survey_app/theme/style.dart';
 import 'package:provider/provider.dart';
+import 'package:timer_count_down/timer_count_down.dart';
+
 
 class DetailSurveyScreen extends StatefulWidget {
   final String id;
@@ -12,7 +16,7 @@ class DetailSurveyScreen extends StatefulWidget {
 }
 
 class _DetailSurveyScreenState extends State<DetailSurveyScreen> {
-  final Map<String, dynamic> answers = {};
+  int currentIndex = 0;
 
   @override
   void initState() {
@@ -26,9 +30,22 @@ class _DetailSurveyScreenState extends State<DetailSurveyScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Padding(
-          padding: EdgeInsets.only(left: 8.0),
-          child: Text('Detail Survey'),
+        title: Row(
+          children: [
+            Countdown(
+              seconds: 60,
+              build: (BuildContext context, double time) => Text(
+                '${time.round()} second left',
+                style: const TextStyle(
+                  color: resultColor,
+                ),
+              ),
+              interval: const Duration(seconds: 1),
+              onFinished: () {
+                print('Timer is done!');
+              },
+            ),
+          ],
         ),
       ),
       body: Consumer<DetailSurveyProvider>(
@@ -40,35 +57,63 @@ class _DetailSurveyScreenState extends State<DetailSurveyScreen> {
           } else if (state.state == ResultState.error) {
             return Center(child: Text(state.message));
           } else {
-            return ListView.builder(
-              itemCount: state.result.data.question.length,
-              itemBuilder: (context, index) {
-                final question = state.result.data.question[index];
-                return ListTile(
-                  title: Text(question.questionName),
-                  // handle the question type here
-                  // for example, if the question type is text, show TextField
-                  // if the question type is multiple choice/radio_button, show RadioListTile
-                  // and so on
-                  // also, don't forget to save the answer to the `answers` map
-                );
-              },
+            return Column(
+              children: [
+                QuestionCard(question: state.result.data.question[currentIndex]),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ElevatedButton(
+                      onPressed: currentIndex > 0 ? () {
+                        setState(() {
+                          currentIndex--;
+                        });
+                      } : null,
+                      child: Text('Previous'),
+                    ),
+                    ElevatedButton(
+                      onPressed: currentIndex < state.result.data.question.length - 1 ? () {
+                        setState(() {
+                          currentIndex++;
+                        });
+                      } : null,
+                      child: Text('Next'),
+                    ),
+                  ],
+                ),
+              ],
             );
           }
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          print({
-            "survey_id": widget.id,
-            "answers": answers.entries.map((e) => {
-              "question_id": e.key,
-              "answer": e.value,
-            }).toList(),
-          });
-        },
-        child: const Icon(Icons.save),
-      ),
+    );
+  }
+}
+
+class QuestionCard extends StatelessWidget {
+  final Question question;
+
+  const QuestionCard({super.key, required this.question});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(question.number),
+        Text(question.questionName),
+        if (question.type == 'multiple_choice') ...question.options.map((option) => RadioListTile<String>(
+          title: Text(option.optionName),
+          value: option.optionid,
+          groupValue: '',
+          onChanged: (value) {},
+        )).toList(),
+        if (question.type == 'checkbox') ...question.options.map((option) => CheckboxListTile(
+          title: Text(option.optionName),
+          value: false,
+          onChanged: (value) {},
+        )).toList(),
+        if (question.type == 'text') TextField(),
+      ],
     );
   }
 }
