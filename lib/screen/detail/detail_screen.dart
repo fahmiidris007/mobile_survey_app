@@ -4,6 +4,7 @@ import 'package:mobile_survey_app/model/post_survey.dart';
 import 'package:mobile_survey_app/model/survey.dart';
 import 'package:mobile_survey_app/provider/detail_survey_provider.dart';
 import 'package:mobile_survey_app/provider/post_survey_provider.dart';
+import 'package:mobile_survey_app/screen/home/home_screen.dart';
 import 'package:mobile_survey_app/theme/style.dart';
 import 'package:provider/provider.dart';
 import 'package:timer_count_down/timer_count_down.dart';
@@ -99,7 +100,11 @@ class _DetailSurveyScreenState extends State<DetailSurveyScreen> {
               showDialog(
                 context: context,
                 builder: (context) {
-                  var questionCount = Provider.of<DetailSurveyProvider>(context).result.data.question.length;
+                  var questionCount = Provider.of<DetailSurveyProvider>(context)
+                      .result
+                      .data
+                      .question
+                      .length;
                   return Dialog(
                     alignment: Alignment.topCenter,
                     insetPadding: EdgeInsets.zero,
@@ -131,10 +136,11 @@ class _DetailSurveyScreenState extends State<DetailSurveyScreen> {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 16),
+                            SizedBox(height: 16),
                             Expanded(
                               child: GridView.builder(
-                                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisCount: 5,
                                   crossAxisSpacing: 8,
                                   mainAxisSpacing: 8,
@@ -157,7 +163,9 @@ class _DetailSurveyScreenState extends State<DetailSurveyScreen> {
                                         ),
                                         borderRadius: BorderRadius.circular(4),
                                       ),
-                                      child: Text('${index + 1}',),
+                                      child: Text(
+                                        '${index + 1}',
+                                      ),
                                     ),
                                   );
                                 },
@@ -279,7 +287,13 @@ class _DetailSurveyScreenState extends State<DetailSurveyScreen> {
                                         actions: [
                                           TextButton(
                                             onPressed: () {
-                                              Navigator.pop(context);
+                                              Navigator.pushAndRemoveUntil(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        HomeScreen()),
+                                                (Route<dynamic> route) => false,
+                                              );
                                             },
                                             child: const Text('OK'),
                                           ),
@@ -350,6 +364,7 @@ class QuestionCard extends StatefulWidget {
 
 class _QuestionCardState extends State<QuestionCard> {
   String selectedOption = '';
+  Set<String> selectedOptions = {};
 
   @override
   Widget build(BuildContext context) {
@@ -374,42 +389,46 @@ class _QuestionCardState extends State<QuestionCard> {
         if (widget.question.type == 'multiple_choice')
           ...widget.question.options
               .map((option) => RadioListTile<String>(
-                    title: Text(option.optionName),
-                    value: option.optionid,
-                    groupValue: selectedOption,
-                    visualDensity: const VisualDensity(
-                      horizontal: VisualDensity.minimumDensity,
-                      vertical: VisualDensity.minimumDensity,
-                    ),
-                    onChanged: (value) {
-                      if (value != null) {
-                        setState(() {
-                          selectedOption = value;
-                        });
-                        widget.updateAnswer(widget.question.questionId, value);
-                      }
-                    },
-                  ))
+            title: Text(option.optionName),
+            value: option.optionid,
+            groupValue: selectedOption,
+            visualDensity: const VisualDensity(
+              horizontal: VisualDensity.minimumDensity,
+              vertical: VisualDensity.minimumDensity,
+            ),
+            onChanged: (value) {
+              if (value != null) {
+                setState(() {
+                  selectedOption = value;
+                });
+                widget.updateAnswer(widget.question.questionId, value);
+              }
+            },
+          ))
               .toList(),
         if (widget.question.type == 'checkbox')
           ...widget.question.options
               .map((option) => CheckboxListTile(
-                    title: Text(option.optionName),
-                    value: selectedOption == option.optionid,
-                    visualDensity: const VisualDensity(
-                      horizontal: VisualDensity.minimumDensity,
-                      vertical: VisualDensity.minimumDensity,
-                    ),
-                    onChanged: (value) {
-                      if (value != null) {
-                        setState(() {
-                          selectedOption = option.optionid;
-                        });
-                        widget.updateAnswer(
-                            widget.question.questionId, option.optionid);
-                      }
-                    },
-                  ))
+            title: Text(option.optionName),
+            value: selectedOptions.contains(option.optionid),
+            visualDensity: const VisualDensity(
+              horizontal: VisualDensity.minimumDensity,
+              vertical: VisualDensity.minimumDensity,
+            ),
+            onChanged: (value) {
+              if (value != null) {
+                setState(() {
+                  if (value) {
+                    selectedOptions.add(option.optionid);
+                  } else {
+                    selectedOptions.remove(option.optionid);
+                  }
+                });
+                widget.updateAnswer(
+                    widget.question.questionId, selectedOptions.toList().join(','));
+              }
+            },
+          ))
               .toList(),
         if (widget.question.type == 'text') TextField(),
       ],
