@@ -51,7 +51,7 @@ class _DetailSurveyScreenState extends State<DetailSurveyScreen> {
               padding: EdgeInsets.fromLTRB(16, 4, 16, 4),
               decoration: BoxDecoration(
                 border: Border.all(color: secondaryColor),
-                borderRadius: BorderRadius.circular(5.0),
+                borderRadius: BorderRadius.circular(4),
               ),
               child: Countdown(
                 seconds: 60,
@@ -92,6 +92,87 @@ class _DetailSurveyScreenState extends State<DetailSurveyScreen> {
             ),
           ],
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.grid_view),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  var questionCount = Provider.of<DetailSurveyProvider>(context).result.data.question.length;
+                  return Dialog(
+                    alignment: Alignment.topCenter,
+                    insetPadding: EdgeInsets.zero,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(0),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxHeight: MediaQuery.of(context).size.height * 0.75,
+                        ),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Survey Question',
+                                  style: myTextTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.close),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            Expanded(
+                              child: GridView.builder(
+                                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 5,
+                                  crossAxisSpacing: 8,
+                                  mainAxisSpacing: 8,
+                                ),
+                                itemCount: questionCount,
+                                itemBuilder: (context, index) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        currentIndex = index;
+                                      });
+                                      Navigator.pop(context);
+                                    },
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: secondaryColor,
+                                        ),
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: Text('${index + 1}',),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        ],
       ),
       body: Consumer<DetailSurveyProvider>(
         builder: (context, state, _) {
@@ -102,21 +183,31 @@ class _DetailSurveyScreenState extends State<DetailSurveyScreen> {
           } else if (state.state == ResultState.error) {
             return Center(child: Text(state.message));
           } else {
-            return SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                    child: Text(state.result.data.name,
-                        style: myTextTheme.titleMedium
-                            ?.copyWith(fontWeight: FontWeight.bold)),
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                          child: Text(state.result.data.name,
+                              style: myTextTheme.titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.bold)),
+                        ),
+                        QuestionCard(
+                          question: state.result.data.question[currentIndex],
+                          updateAnswer: updateAnswer,
+                        ),
+                      ],
+                    ),
                   ),
-                  QuestionCard(
-                    question: state.result.data.question[currentIndex],
-                    updateAnswer: updateAnswer,
-                  ),
-                  Row(
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       ElevatedButton(
@@ -217,8 +308,8 @@ class _DetailSurveyScreenState extends State<DetailSurveyScreen> {
                       ),
                     ],
                   ),
-                ],
-              ),
+                ),
+              ],
             );
           }
         },
