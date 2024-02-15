@@ -7,6 +7,7 @@ const Color onPrimaryColor = Colors.black;
 const Color labelColor = Color(0xFFB9B9B9);
 const Color hintColor = Color(0xFF757575);
 const Color resultColor = Color(0xFF107C41);
+const Color dividerColor = Color(0xFFEEF6F9);
 
 
 ThemeData lightTheme = ThemeData(

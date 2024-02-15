@@ -5,7 +5,6 @@ import 'package:mobile_survey_app/theme/style.dart';
 import 'package:provider/provider.dart';
 import 'package:timer_count_down/timer_count_down.dart';
 
-
 class DetailSurveyScreen extends StatefulWidget {
   final String id;
 
@@ -22,7 +21,8 @@ class _DetailSurveyScreenState extends State<DetailSurveyScreen> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      Provider.of<DetailSurveyProvider>(context, listen: false).getDetailSurveyTest(widget.id);
+      Provider.of<DetailSurveyProvider>(context, listen: false)
+          .getDetailSurveyTest(widget.id);
     });
   }
 
@@ -30,20 +30,51 @@ class _DetailSurveyScreenState extends State<DetailSurveyScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Row(
           children: [
-            Countdown(
-              seconds: 60,
-              build: (BuildContext context, double time) => Text(
-                '${time.round()} second left',
-                style: const TextStyle(
-                  color: resultColor,
-                ),
+            Container(
+              padding: EdgeInsets.fromLTRB(16, 4, 16, 4),
+              decoration: BoxDecoration(
+                border: Border.all(color: secondaryColor),
+                borderRadius: BorderRadius.circular(5.0),
               ),
-              interval: const Duration(seconds: 1),
-              onFinished: () {
-                print('Timer is done!');
-              },
+              child: Countdown(
+                seconds: 60,
+                build: (BuildContext context, double time) => Text(
+                  '${time.round()} second left',
+                  style: myTextTheme.bodyLarge?.copyWith(
+                    color: secondaryColor,
+                  ),
+                ),
+                interval: const Duration(seconds: 1),
+                onFinished: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: const Text('Time is up!'),
+                        content:
+                            const Text('Do you want to submit your answer?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Text('No'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Text('Yes'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+              ),
             ),
           ],
         ),
@@ -57,31 +88,49 @@ class _DetailSurveyScreenState extends State<DetailSurveyScreen> {
           } else if (state.state == ResultState.error) {
             return Center(child: Text(state.message));
           } else {
-            return Column(
-              children: [
-                QuestionCard(question: state.result.data.question[currentIndex]),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    ElevatedButton(
-                      onPressed: currentIndex > 0 ? () {
-                        setState(() {
-                          currentIndex--;
-                        });
-                      } : null,
-                      child: Text('Previous'),
-                    ),
-                    ElevatedButton(
-                      onPressed: currentIndex < state.result.data.question.length - 1 ? () {
-                        setState(() {
-                          currentIndex++;
-                        });
-                      } : null,
-                      child: Text('Next'),
-                    ),
-                  ],
-                ),
-              ],
+            return SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                    child: Text(state.result.data.name,
+                        style: myTextTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.bold)),
+                  ),
+                  QuestionCard(
+                      question: state.result.data.question[currentIndex]),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ElevatedButton(
+                        onPressed: currentIndex > 0
+                            ? () {
+                                setState(() {
+                                  currentIndex--;
+                                });
+                              }
+                            : null,
+                        child: Text('Previous'),
+                      ),
+                      ElevatedButton(
+                        onPressed:
+                            currentIndex < state.result.data.question.length - 1
+                                ? () {
+                                    setState(() {
+                                      currentIndex++;
+                                    });
+                                  }
+                                : null,
+                        child:
+                            currentIndex < state.result.data.question.length - 1
+                                ? Text('Next')
+                                : Text('Finish'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             );
           }
         },
@@ -98,20 +147,48 @@ class QuestionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(question.number),
-        Text(question.questionName),
-        if (question.type == 'multiple_choice') ...question.options.map((option) => RadioListTile<String>(
-          title: Text(option.optionName),
-          value: option.optionid,
-          groupValue: '',
-          onChanged: (value) {},
-        )).toList(),
-        if (question.type == 'checkbox') ...question.options.map((option) => CheckboxListTile(
-          title: Text(option.optionName),
-          value: false,
-          onChanged: (value) {},
-        )).toList(),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Text(
+            '${question.number}. ${question.questionName}',
+            style: myTextTheme.bodyLarge?.copyWith(color: hintColor),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          margin: const EdgeInsets.symmetric(vertical: 16),
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: dividerColor,
+          ),
+        ),
+        if (question.type == 'multiple_choice')
+          ...question.options
+              .map((option) => RadioListTile<String>(
+                    title: Text(option.optionName),
+                    value: option.optionid,
+                    groupValue: '',
+                    visualDensity: const VisualDensity(
+                      horizontal: VisualDensity.minimumDensity,
+                      vertical: VisualDensity.minimumDensity,
+                    ),
+                    onChanged: (value) {},
+                  ))
+              .toList(),
+        if (question.type == 'checkbox')
+          ...question.options
+              .map((option) => CheckboxListTile(
+                    title: Text(option.optionName),
+                    value: false,
+                    visualDensity: const VisualDensity(
+                      horizontal: VisualDensity.minimumDensity,
+                      vertical: VisualDensity.minimumDensity,
+                    ),
+                    onChanged: (value) {},
+                  ))
+              .toList(),
         if (question.type == 'text') TextField(),
       ],
     );
