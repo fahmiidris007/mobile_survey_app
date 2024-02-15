@@ -69,7 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
               constraints: const BoxConstraints(maxHeight: 40),
               border: const OutlineInputBorder(
                 borderRadius: BorderRadius.all(
-                  Radius.circular(8),
+                  Radius.circular(4),
                 ),
               )),
           validator: (value) {
@@ -93,7 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
             constraints: const BoxConstraints(maxHeight: 40),
             border: const OutlineInputBorder(
               borderRadius: BorderRadius.all(
-                Radius.circular(8),
+                Radius.circular(4),
               ),
             ),
             suffixIcon: IconButton(
