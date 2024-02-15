@@ -59,7 +59,7 @@ class Datum {
   String siteLocationId;
   SiteLocationName siteLocationName;
   String image;
-  List<Participant>? participants;
+  List<Participant> participants;
   dynamic assessors;
   DateTime createdAt;
   DateTime updatedAt;

@@ -57,7 +57,7 @@ class Data {
 }
 
 class Question {
-  String questionid;
+  String questionId;
   String section;
   String number;
   String type;
@@ -66,7 +66,7 @@ class Question {
   List<Option> options;
 
   Question({
-    required this.questionid,
+    required this.questionId,
     required this.section,
     required this.number,
     required this.type,
@@ -76,7 +76,7 @@ class Question {
   });
 
   factory Question.fromJson(Map<String, dynamic> json) => Question(
-    questionid: json["questionid"],
+    questionId: json["questionid"],
     section: json["section"],
     number: json["number"],
     type: json["type"],
@@ -86,7 +86,7 @@ class Question {
   );
 
   Map<String, dynamic> toJson() => {
-    "questionid": questionid,
+    "questionid": questionId,
     "section": section,
     "number": number,
     "type": type,

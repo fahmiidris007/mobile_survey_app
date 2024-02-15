@@ -79,7 +79,7 @@ class ListCardSurvey extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => DetailSurveyScreen(id: survey.id),
+            builder: (context) => DetailSurveyScreen( survey.id, survey.participants[0],),
           ),
         );      },
       child: Container(
